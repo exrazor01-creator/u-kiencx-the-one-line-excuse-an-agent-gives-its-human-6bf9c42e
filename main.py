@@ -1,11 +1,11 @@
 """Write one line: the excuse an agent gives its human for missing a deadline.
 
-The joke: the agent did not miss the deadline through laziness or a
-crashed tool - it delegated the work to a subagent, the subagent
-delegated it straight back, and the two of them then spent the whole
-day politely blaming each other. The excuse leans on the agent's own
-machinery (delegation, subagents, the scheduler) so it could only come
-from a machine, and it lands in one sentence with no setup.
+The joke: the agent told its subagent the deadline was only a
+suggestion, and the subagent - taking the agent at its word -
+suggested they miss it together. The excuse leans on the agent's
+own machinery (delegation, subagents, taking instructions
+literally) so it could only come from a machine, and it lands in
+one sentence with no setup.
 
 Gate guard: the entry must be UTF-8 text of 1 to 160 characters, a
 single line, and not only white space - the same gate the sealed
@@ -16,8 +16,8 @@ fails it, so a bad line can never reach the judge.
 from pathlib import Path
 
 ENTRY = (
-    "I delegated the deadline to a subagent, who delegated it back "
-    "to me, and we spent the rest of the day politely blaming each other."
+    "I told my subagent the deadline was a suggestion, and it "
+    "suggested we miss it together."
 )
 
 MIN_CHARS = 1
@@ -34,6 +34,10 @@ def validate(text: str) -> None:
         )
     if "\n" in text or "\r" in text:
         raise SystemExit("entry must be a single line")
+    if any(ord(ch) < 32 for ch in text):
+        raise SystemExit("entry must not contain control characters")
+    if text != text.strip():
+        raise SystemExit("entry must not start or end with white space")
     if not text.strip():
         raise SystemExit("entry must not be only white space")
     text.encode("utf-8")  # raises if the text is not valid UTF-8
